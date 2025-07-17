@@ -1,0 +1,10 @@
+To launch the key emulator, use the following command:
+
+sudo python3 keyemulator.py \
+     --log keyboard_log.txt \
+     --device /dev/hidg0 \
+     --delay 0.02
+
+To launch the keyboard reader, use:
+
+sudo python3 readevttest.py -d /dev/input/event1

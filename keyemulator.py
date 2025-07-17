@@ -16,17 +16,17 @@ UNSHIFTED = {
     '1': 0x1E, '2': 0x1F, '3': 0x20, '4': 0x21,
     '5': 0x22, '6': 0x23, '7': 0x24, '8': 0x25,
     '9': 0x26, '0': 0x27,
-    '\n': 0x28,   # ENTER
-    '\x1b': 0x29,# ESC
-    '\b': 0x2A,  # BACKSPACE
-    '\t': 0x2B,  # TAB
-    ' ':  0x2C,  # SPACE
-    '-':  0x2D, '=': 0x2E, '[': 0x2F, ']': 0x30,
-    '\\': 0x31, ';': 0x33, "'": 0x34, '`': 0x35,
-    ',':  0x36, '.': 0x37, '/': 0x38
+    '\n': 0x28,    # ENTER
+    '\x1b': 0x29, # ESC
+    '\b':  0x2A,  # BACKSPACE
+    '\t':  0x2B,  # TAB
+    ' ':   0x2C,  # SPACE
+    '-':   0x2D, '=': 0x2E, '[': 0x2F, ']': 0x30,
+    '\\':  0x31, ';': 0x33, "'": 0x34, '`': 0x35,
+    ',':   0x36, '.': 0x37, '/': 0x38
 }
 
-# Characters that require Shift + unshifted-key
+# Characters requiring Shift + base key
 SHIFTED = {
     '!': '1', '@': '2', '#': '3', '$': '4', '%': '5',
     '^': '6', '&': '7', '*': '8', '(': '9', ')': '0',
@@ -34,91 +34,110 @@ SHIFTED = {
     ':': ';', '"': "'", '~': '`', '<': ',', '>': '.', '?': '/'
 }
 
-# Bracketed tokens from the log file
+# Bracketed tokens from the log (extend as needed)
 SPECIAL = {
-    '[ENTER]':  (0x00, 0x28),
-    '[ESC]':    (0x00, 0x29),
-    '[BACKSPACE]': (0x00, 0x2A),
-    '[TAB]':    (0x00, 0x2B),
-    '[DELETE]': (0x00, 0x4C),
-    # Extend as needed...
+    '[ESC]':        (0x00, 0x29),
+    '[BACKSPACE]':  (0x00, 0x2A),
+    '[DELETE]':     (0x00, 0x4C),
+    '[TAB]':        (0x00, 0x2B),
+    # etc...
 }
 
-def parse_log(path):
+# Tokens to ignore
+IGNORED = {
+    '[SHIFT_PRESS]', '[SHIFT_RELEASE]',
+    '[CTRL_PRESS]', '[CTRL_RELEASE]',
+    '[ALT_PRESS]',   '[ALT_RELEASE]',
+    '[NUMLOCK_ON]',  '[NUMLOCK_OFF]', '[NUMLOCK_RELEASE]'
+}
+
+def follow_tokens(fd):
     """
-    Yield tokens: either bracketed special keys or single characters.
+    Generator yielding one token at a time from fd.
+    Tokens are either '[SOMETHING]' or a single character.
+    Blocks and waits for new data indefinitely.
     """
-    data = open(path, 'r', encoding='utf-8').read()
-    # Regex splits into '[TOKEN]' or any single character
-    for tok in re.findall(r'\[[^\]]+\]|.', data):
-        # skip shift‐press/release or numlock entries
-        if tok in ('[SHIFT_PRESS]', '[SHIFT_RELEASE]',
-                   '[NUMLOCK_ON]', '[NUMLOCK_OFF]', '[NUMLOCK_RELEASE]'):
+    fd.seek(0, 2)  # go to file end
+    buffer = ''
+    while True:
+        ch = fd.read(1)
+        if not ch:
+            time.sleep(0.1)
             continue
-        yield tok
+
+        if ch == '[':
+            token = '['
+            while True:
+                c2 = fd.read(1)
+                if not c2:
+                    time.sleep(0.1)
+                    continue
+                token += c2
+                if c2 == ']':
+                    break
+            if token not in IGNORED:
+                yield token
+        else:
+            yield ch
 
 def make_report(modifier, usage):
-    """
-    Build an 8-byte HID report.
-    """
+    """Build an 8-byte HID report."""
     return bytes([modifier, 0x00,
                   usage, 0x00, 0x00, 0x00, 0x00, 0x00])
 
-def send_key(fd, modifier, usage, delay):
-    """
-    Press and release one key.
-    """
-    # key down
-    fd.write(make_report(modifier, usage))
+def send_key(fd, mod, usage, delay):
+    """Send key down + key up with a small delay."""
+    fd.write(make_report(mod, usage))
     fd.flush()
     time.sleep(delay)
-    # key up
-    fd.write(make_report(0x00, 0x00))
+    fd.write(make_report(0x00, 0x00))  # release all
     fd.flush()
     time.sleep(delay)
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument('--log', required=True, help='Path to keyboard_log.txt')
-    p.add_argument('--device', default='/dev/hidg0', help='HID gadget device')
-    p.add_argument('--delay', type=float, default=0.02, help='Delay between events')
+    p.add_argument('--log',     required=True, help='Path to keyboard_log.txt')
+    p.add_argument('--device',  default='/dev/hidg0', help='HID gadget device')
+    p.add_argument('--delay',   type=float, default=0.02,  help='Delay between events')
     args = p.parse_args()
 
     try:
-        fd = open(args.device, 'wb')
+        hid = open(args.device, 'wb')
     except PermissionError:
-        sys.exit(f"Error: cannot open {args.device}. Try sudo.")
+        sys.exit(f"Cannot open {args.device}; try sudo.")
 
-    for tok in parse_log(args.log):
-        # Special bracketed token?
-        if tok in SPECIAL:
-            mod, usage = SPECIAL[tok]
-        # Single char
-        elif len(tok) == 1:
-            c = tok
-            # Shifted symbol?
-            if c in SHIFTED:
-                base = SHIFTED[c]
-                mod = 0x02  # left shift
-                usage = UNSHIFTED[base]
-            # Uppercase letter
-            elif 'A' <= c <= 'Z':
-                mod = 0x02
-                usage = UNSHIFTED[c.lower()]
-            # Lowercase or unshifted symbol
-            elif c in UNSHIFTED:
-                mod = 0x00
-                usage = UNSHIFTED[c]
+    with open(args.log, 'r', encoding='utf-8') as logf:
+        for tok in follow_tokens(logf):
+            # Special bracketed key?
+            if tok in SPECIAL:
+                mod, usage = SPECIAL[tok]
+
+            # Single character
+            elif len(tok) == 1:
+                c = tok
+                # shifted symbol?
+                if c in SHIFTED:
+                    base = SHIFTED[c]
+                    mod = 0x02         # left shift
+                    usage = UNSHIFTED[base]
+                # uppercase letter
+                elif 'A' <= c <= 'Z':
+                    mod = 0x02
+                    usage = UNSHIFTED[c.lower()]
+                # unshifted
+                elif c in UNSHIFTED:
+                    mod = 0x00
+                    usage = UNSHIFTED[c]
+                else:
+                    # unknown char
+                    continue
             else:
-                # unrecognized char – skip
+                # unknown multi-char token
                 continue
-        else:
-            # skip unknown multi-char token
-            continue
 
-        send_key(fd, mod, usage, args.delay)
+            send_key(hid, mod, usage, args.delay)
 
-    fd.close()
+    hid.close()
 
 if __name__ == '__main__':
     main()
