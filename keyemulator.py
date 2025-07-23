@@ -23,7 +23,8 @@ UNSHIFTED = {
     ' ':   0x2C,  # SPACE
     '-':   0x2D, '=': 0x2E, '[': 0x2F, ']': 0x30,
     '\\':  0x31, ';': 0x33, "'": 0x34, '`': 0x35,
-    ',':   0x36, '.': 0x37, '/': 0x38
+    ',':   0x36, '.': 0x37, '/': 0x38, 'É': 0x1F,
+    'À': 0x27, 'Ç': 0x26, 'È': 0x24
 }
 
 # Characters requiring Shift + base key
@@ -40,7 +41,27 @@ SPECIAL = {
     '[BACKSPACE]':  (0x00, 0x2A),
     '[DELETE]':     (0x00, 0x4C),
     '[TAB]':        (0x00, 0x2B),
-    # etc...
+    '[UP]':         (0x00, 0x52),
+    '[DOWN]':       (0x00, 0x51),
+    '[LEFT]':       (0x00, 0x50),
+    '[RIGHT]':      (0x00, 0x4F),
+    '[HOME]':       (0x00, 0x4A),
+    '[END]':        (0x00, 0x4D),
+    '[PAGEUP]':     (0x00, 0x4B),
+    '[PAGEDOWN]':   (0x00, 0x4E),
+    '[F1]':         (0x00, 0x3A),
+    '[F2]':         (0x00, 0x3B),
+    '[F3]':         (0x00, 0x3C),
+    '[F4]':         (0x00, 0x3D),
+    '[F5]':         (0x00, 0x3E),
+    '[F6]':         (0x00, 0x3F),
+    '[F7]':         (0x00, 0x40),
+    '[F8]':         (0x00, 0x41),
+    '[F9]':         (0x00, 0x42),
+    '[F10]':        (0x00, 0x43),
+    '[F11]':        (0x00, 0x44),
+    '[[]':          (0x00, 0x2F),
+    '[F12]':        (0x00, 0x45),
 }
 
 # Tokens to ignore
@@ -48,6 +69,7 @@ IGNORED = {
     '[SHIFT_PRESS]', '[SHIFT_RELEASE]',
     '[CTRL_PRESS]', '[CTRL_RELEASE]',
     '[ALT_PRESS]',   '[ALT_RELEASE]',
+    '[ALTGR_PRESS]', '[ALTGR_RELEASE]',
     '[NUMLOCK_ON]',  '[NUMLOCK_OFF]', '[NUMLOCK_RELEASE]'
 }
 
