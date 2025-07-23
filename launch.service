@@ -1,0 +1,14 @@
+[Unit]
+Description=Keyboard Logger → HID Emulator Tunnel
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/launch.sh
+Restart=on-failure
+User=root
+# Ensure Python output is unbuffered
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target

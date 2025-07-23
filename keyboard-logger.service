@@ -1,0 +1,29 @@
+[Unit]
+Description=Keyboard EVTest Logger
+Requires=setup-usb.service
+After=multi-user.target
+
+[Service]
+Type=simple
+
+# Ensure log directory + file exist with correct perms
+ExecStartPre=mkdir -p /var/log
+ExecStartPre=touch /var/log/keyboard_log.txt
+ExecStartPre=chmod 600 /var/log/keyboard_log.txt
+
+ExecStart=python3 /usr/local/bin/readevttest.py -d /dev/input/event1\
+  --output /var/log/keyboard_log.txt
+
+# auto-restart on crash
+Restart=always
+RestartSec=500ms
+
+# needs root to read /dev/input/event*
+User=root
+
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=keyboard-logger
+
+[Install]
+WantedBy=multi-user.target

@@ -148,7 +148,7 @@ class KeyboardLogger:
         try:
             # Open output file
             self.log_file = open(self.output_file, 'a', encoding='utf-8')
-            self.log_file.write(f"\n--- Keyboard logging started at {datetime.now()} ---\n")
+            self.log_file.write(f"\n")
             self.log_file.flush()
             
             # Start evtest process
@@ -316,7 +316,7 @@ class KeyboardLogger:
                 self.process.kill()
                 
         if self.log_file:
-            self.log_file.write(f"\n--- Keyboard logging stopped at {datetime.now()} ---\n")
+            self.log_file.write(f"\n")
             self.log_file.close()
             
         print(f"Log saved to: {self.output_file}")

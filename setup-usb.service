@@ -1,0 +1,18 @@
+[Unit]
+Description=setuyp usb
+After=multi-user.target
+
+[Service]
+Type=oneshot
+
+ExecStart=/home/debian/install.sh
+
+# needs root to write HID gadget
+User=root
+
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=setup usb
+
+[Install]
+WantedBy=multi-user.target

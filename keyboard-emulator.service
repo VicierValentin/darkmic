@@ -1,0 +1,26 @@
+[Unit]
+Description=Keyboard HID Emulator
+# start only after the logger is running
+After=multi-user.target
+
+[Service]
+Type=simple
+
+ExecStart=python3 /usr/local/bin/keyemulator.py \
+  --log /var/log/keyboard_log.txt \
+  --device /dev/hidg0 \
+  --delay 0.02
+
+# auto-restart on crash
+Restart=always
+RestartSec=500ms
+
+# needs root to write HID gadget
+User=root
+
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=keyboard-emulator
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,27 @@
+# /etc/systemd/system/set-bbb-ip.service
+[Unit]
+Description=Set Static IP Address for BeagleBone Black
+After=network-pre.target
+Before=network.target
+Wants=network.target
+
+[Service]
+ExecStartPre=/bin/sleep 180
+
+ExecStart=/home/debian/set-bbb-ip.sh
+Type=oneshot
+RemainAfterExit=true
+
+[Install]
+WantedBy=multi-user.target
+
+[Unit]
+Description=Run set-bbb-ip.service every 1 minute
+
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=1min
+Unit=set-bbb-ip.service
+
+[Install]
+WantedBy=timers.target
