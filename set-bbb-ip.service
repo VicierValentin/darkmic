@@ -6,7 +6,7 @@ Before=network.target
 Wants=network.target
 
 [Service]
-ExecStartPre=/bin/sleep 180
+ExecStartPre=/bin/sleep 100
 
 ExecStart=/home/debian/set-bbb-ip.sh
 Type=oneshot

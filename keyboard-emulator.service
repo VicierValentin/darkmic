@@ -6,8 +6,8 @@ After=multi-user.target
 [Service]
 Type=simple
 
-ExecStart=python3 /usr/local/bin/keyemulator.py \
-  --log /var/log/keyboard_log.txt \
+ExecStart=python3 /home/debian/keyemulator.py \
+  --log /home/debian/keyboard_log.txt \
   --device /dev/hidg0 \
   --delay 0.02
 

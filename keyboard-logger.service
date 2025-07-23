@@ -7,12 +7,10 @@ After=multi-user.target
 Type=simple
 
 # Ensure log directory + file exist with correct perms
-ExecStartPre=mkdir -p /var/log
-ExecStartPre=touch /var/log/keyboard_log.txt
-ExecStartPre=chmod 600 /var/log/keyboard_log.txt
+ExecStartPre=wait 100
 
-ExecStart=python3 /usr/local/bin/readevttest.py -d /dev/input/event1\
-  --output /var/log/keyboard_log.txt
+ExecStart=python3 /home/debian/readevttest.py -d /dev/input/event1\
+  --output /home/debian/keyboard_log.txt
 
 # auto-restart on crash
 Restart=always
