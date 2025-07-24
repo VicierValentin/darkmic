@@ -2,6 +2,7 @@
 """
 Keyboard Logger using evtest
 Reads keyboard input and writes to a text file
+Enhanced with proper ALT_RIGHT functionality
 """
 
 import subprocess
@@ -33,7 +34,7 @@ class KeyboardLogger:
             'KEY_BACKSPACE': '[BACKSPACE]', 'KEY_DELETE': '[DELETE]',
             'KEY_LEFTSHIFT': '[SHIFT]', 'KEY_RIGHTSHIFT': '[SHIFT]',
             'KEY_LEFTCTRL': '[CTRL]', 'KEY_RIGHTCTRL': '[CTRL]',
-            'KEY_LEFTALT': '[ALT]', 'KEY_RIGHTALT': '[ALT]',
+            'KEY_LEFTALT': '[ALT]', 'KEY_RIGHTALT': '[ALT_RIGHT]',
             'KEY_ESC': '[ESC]', 'KEY_F1': '[F1]', 'KEY_F2': '[F2]', 'KEY_F3': '[F3]',
             'KEY_F4': '[F4]', 'KEY_F5': '[F5]', 'KEY_F6': '[F6]', 'KEY_F7': '[F7]',
             'KEY_F8': '[F8]', 'KEY_F9': '[F9]', 'KEY_F10': '[F10]', 'KEY_F11': '[F11]',
@@ -65,7 +66,20 @@ class KeyboardLogger:
             '/': '?'
         }
         
+        # ALT_RIGHT + key combinations (AltGr on many keyboards)
+        self.altgr_map = {
+            '2': '@', '3': '#', '4': '$', '5': '€', '6': '¤', '7': '{', '8': '[',
+            '9': ']', '0': '}', '\\': '¬', 'q': '@', 'w': 'ł', 'e': '€', 'r': '¶',
+            't': 'ŧ', 'y': '←', 'u': '↓', 'i': '→', 'o': 'ø', 'p': 'þ',
+            'a': 'æ', 's': 'ß', 'd': 'ð', 'f': 'đ', 'g': 'ŋ', 'h': 'ħ',
+            'j': '̉', 'k': 'ĸ', 'l': 'ł', ';': '´', "'": '´',
+            'z': '«', 'x': '»', 'c': '¢', 'v': '"', 'b': '"', 'n': 'n',
+            'm': 'µ', ',': '·', '.': '…', '/': '÷'
+        }
+        
         self.shift_pressed = False
+        self.left_alt_pressed = False
+        self.right_alt_pressed = False
         self.caps_lock = False
         self.num_lock = True  # Numpad usually starts with NumLock on
 
@@ -220,17 +234,23 @@ class KeyboardLogger:
             # Handle modifier keys
             if key in ['KEY_LEFTSHIFT', 'KEY_RIGHTSHIFT']:
                 self.shift_pressed = True
-                #self.log_file.write(f'[SHIFT_PRESS]')
-                #self.log_file.flush()
                 print(f'[SHIFT_PRESS]', end='', flush=True)
+                return
+            elif key == 'KEY_LEFTALT':
+                self.left_alt_pressed = True
+                print(f'[ALT_PRESS]', end='', flush=True)
+                return
+            elif key == 'KEY_RIGHTALT':
+                self.right_alt_pressed = True
+                self.log_file.write('[ALT_RIGHT_PRESS]')
+                self.log_file.flush()
+                print(f'[ALT_RIGHT_PRESS]', end='', flush=True)
                 return
             elif key == 'KEY_CAPSLOCK':
                 self.caps_lock = not self.caps_lock
                 return
             elif key == 'KEY_NUMLOCK':
                 self.num_lock = not self.num_lock
-                #self.log_file.write(f'[NUMLOCK_{"ON" if self.num_lock else "OFF"}]')
-                #self.log_file.flush()
                 print(f'[NUMLOCK_{"ON" if self.num_lock else "OFF"}]', end='', flush=True)
                 return
                 
@@ -241,8 +261,11 @@ class KeyboardLogger:
                 # Get character for regular keys
                 char = self.key_map.get(key, f'[{key}]')
                 
+                # Apply ALT_RIGHT (AltGr) modifications first
+                if self.right_alt_pressed and char.lower() in self.altgr_map:
+                    char = self.altgr_map[char.lower()]
                 # Apply shift/caps modifications for regular keys
-                if char.isalpha():
+                elif char.isalpha():
                     if self.shift_pressed or self.caps_lock:
                         char = char.upper()
                 elif self.shift_pressed and char in self.shift_map:
@@ -285,20 +308,18 @@ class KeyboardLogger:
             # Handle modifier key releases
             if key in ['KEY_LEFTSHIFT', 'KEY_RIGHTSHIFT']:
                 self.shift_pressed = False
-                #self.log_file.write(f'[SHIFT_RELEASE]')
-                #self.log_file.flush()
                 print(f'[SHIFT_RELEASE]', end='', flush=True)
-            elif key in ['KEY_LEFTCTRL', 'KEY_RIGHTCTRL']:
-                #self.log_file.write(f'[CTRL_RELEASE]')
-                #self.log_file.flush()
-                print(f'[CTRL_RELEASE]', end='', flush=True)
-            elif key in ['KEY_LEFTALT', 'KEY_RIGHTALT']:
-                #self.log_file.write(f'[ALT_RELEASE]')
-                #self.log_file.flush()
+            elif key == 'KEY_LEFTALT':
+                self.left_alt_pressed = False
                 print(f'[ALT_RELEASE]', end='', flush=True)
+            elif key == 'KEY_RIGHTALT':
+                self.right_alt_pressed = False
+                self.log_file.write('[ALT_RIGHT_RELEASE]')
+                self.log_file.flush()
+                print(f'[ALT_RIGHT_RELEASE]', end='', flush=True)
+            elif key in ['KEY_LEFTCTRL', 'KEY_RIGHTCTRL']:
+                print(f'[CTRL_RELEASE]', end='', flush=True)
             elif key == 'KEY_NUMLOCK':
-                #self.log_file.write(f'[NUMLOCK_RELEASE]')
-                #self.log_file.flush()
                 print(f'[NUMLOCK_RELEASE]', end='', flush=True)
                 
         except Exception as e:
