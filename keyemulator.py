@@ -74,6 +74,7 @@ SPECIAL = {
     '[@]':  (0x40, 0x27),
     '[BRACK]':  (0x40, 0x2d),
     '[}]':  (0x40, 0x2e),
+    
     '[LEFTBRACE]': (0x00, 0x2f), #This is the ^ on azerty keyboards
     '[<]': (0x00, 0x64), # This is the < on azerty keyboards
     '[>]': (0x20, 0x64), # This is the > on azerty keyboards
