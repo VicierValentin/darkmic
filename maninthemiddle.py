@@ -123,7 +123,7 @@ class AzertyKeyboardProcessor:
             ',': 0x36,
             '.': 0x37,
             '/': 0x38,
-            '`': 0x21,
+            '`': 0x35,
 
             'k.': 0x36,
             '×': 0x32,  # Multiplication signœ
@@ -186,6 +186,7 @@ class AzertyKeyboardProcessor:
            '}': 0x27,
            '\\': 0x2D,
             '=': 0x2E,
+            '~': 0x35,
         }
         
         # USB HID modifier byte values
