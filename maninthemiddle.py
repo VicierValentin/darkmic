@@ -30,7 +30,7 @@ class AzertyKeyboardProcessor:
     Handles AZERTY keyboard input processing, logging, and USB HID emulation
     """
     
-    def __init__(self, log_file="keyboard_log.txt", hid_device="/dev/hidg0"):
+    def __init__(self, log_file="/home/debian/keyboard_log.txt", hid_device="/dev/hidg0"):
         self.log_file = log_file
         self.hid_device = hid_device
         self.log_lock = Lock()

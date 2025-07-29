@@ -14,7 +14,7 @@ if [[ "$EUID" -ne 0 ]]; then
 fi
 
 # Find ConnMan service with label "AR Wired"
-SERVICE=$(connmanctl services | awk '/AR Wired/ {print $NF}')
+SERVICE=$(connmanctl services | awk '/ethernet_/ {print $NF}')
 
 if [[ -z "$SERVICE" ]]; then
   echo "❌ Could not find ConnMan service named 'AR Wired'"
