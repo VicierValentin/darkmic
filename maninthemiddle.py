@@ -351,7 +351,7 @@ class AzertyKeyboardProcessor:
                 self.modifiers['alt'] = (event.event_type == keyboard.KEY_DOWN)
             elif event.name in ['alt gr', 'right alt']:
                 self.modifiers['altgr'] = (event.event_type == keyboard.KEY_DOWN)
-            elif event.name in ['windows', 'left windows', 'right windows']:
+            elif event.name in ['windows', 'left windows', 'right windows', 'left meta', 'right meta']:
                 self.modifiers['win'] = (event.event_type == keyboard.KEY_DOWN)
             
             # Process key press events (not releases or repeats)
@@ -375,6 +375,8 @@ class AzertyKeyboardProcessor:
                     char = 'k.'
                 if event.scan_code == 86:  
                     char = 'c' + char
+                if event.scan_code == 125:
+                    print(f"Detected win key press")
                 
                 # Process the key for HID transmission
                 if len(event.name) == 1:
