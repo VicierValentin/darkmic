@@ -106,13 +106,13 @@ class QwertyToAzertyTranslator:
             # For AltGr combinations, we need to map the symbol back to the key position
             for symbol, azerty_key in self.altgr_mapping.items():
                 if key == symbol:
-                    return f"AltGr+{azerty_key}"
-            return f"AltGr+{self.basic_mapping.get(key_lower, key)}"
+                    return f"{azerty_key}"
+            return f"{self.basic_mapping.get(key_lower, key)}"
         
         # Handle shifted symbols
         if key in self.shifted_symbol_mapping:
             azerty_pos = self.shifted_symbol_mapping[key]
-            return f"Shift+{azerty_pos}"
+            return f"{azerty_pos}"
         
         # Handle basic symbols
         if key in self.symbol_mapping:
