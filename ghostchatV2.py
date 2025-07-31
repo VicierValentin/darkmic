@@ -30,17 +30,17 @@ class HIDKeyboard:
             '!': (30, 0x02), '@': (31, 0x02), '#': (32, 0x02), '$': (33, 0x02), '%': (34, 0x02),
             '^': (35, 0x02), '&': (36, 0x02), '*': (37, 0x02), '(': (38, 0x02), ')': (39, 0x02),
             '-': 45, '_': (45, 0x02), '=': 46, '+': (46, 0x02),
-            '[': 47, '{': (47, 0x02), ']': 48, '}': (48, 0x02),
+            '[': 47, '{': (47, 0x02), '[': 48, '}': (48, 0x02),
             '\\': 49, '|': (49, 0x02), ';': 51, ':': (51, 0x02),
             "'": 52, '"': (52, 0x02), '`': 53, '~': (53, 0x02),
             ',': 54, '<': (54, 0x02), '.': 55, '>': (55, 0x02),
-            '/': 56, '?': (56, 0x02)
+            '/': 56, '?': (56, 0x02), ']': 0x30,
         }
         
         # Extended character map for AltGr combinations (common European layouts)
         self.altgr_map = {
             # Common AltGr characters
-            '€': (8, 0x40),    # AltGr + E = Euro
+            '€': (23, 0x05),    # MODIFIED TO CTRL D
             '@': (20, 0x40),   # AltGr + Q = @
             '²': (31, 0x40),   # AltGr + 2 = ²
             '³': (32, 0x40),   # AltGr + 3 = ³
@@ -49,7 +49,7 @@ class HIDKeyboard:
             '¾': (35, 0x40),   # AltGr + 6 = ¾
             '{': (36, 0x40),   # AltGr + 7 = {
             '[': (37, 0x40),   # AltGr + 8 = [
-            ']': (38, 0x40),   # AltGr + 9 = ]
+            #']': (38, 0x40),   # AltGr + 9 = ]
             '}': (39, 0x40),   # AltGr + 0 = }
             '\\': (45, 0x40),  # AltGr + - = \
             '|': (46, 0x40),   # AltGr + = = |
@@ -61,7 +61,7 @@ class HIDKeyboard:
             'caps_lock': 57, 'f1': 58, 'f2': 59, 'f3': 60, 'f4': 61, 'f5': 62,
             'f6': 63, 'f7': 64, 'f8': 65, 'f9': 66, 'f10': 67, 'f11': 68, 'f12': 69,
             'home': 74, 'page_up': 75, 'delete': 76, 'end': 77, 'page_down': 78,
-            'right_arrow': 79, 'left_arrow': 80, 'down_arrow': 81, 'up_arrow': 82
+            'right_arrow': 79, 'left_arrow': 80, 'down_arrow': 81, 'up_arrow': 82, 'left': 0x64, 'deux': 0x1F, 'etoile': 0x32,
         }
         
         # Modifier key constants
@@ -86,7 +86,7 @@ class HIDKeyboard:
                 hid_device.flush()
                 
                 # Small delay
-                time.sleep(0.01)
+                time.sleep(0.000001)
                 
                 # Send key release (all zeros)
                 key_release = bytes([0, 0, 0, 0, 0, 0, 0, 0])
@@ -144,7 +144,7 @@ class HIDKeyboard:
             if not self.send_key_with_char(char):
                 # If character sending failed, try to continue with others
                 continue
-            time.sleep(0.05)  # Delay between characters
+            time.sleep(0.000001)  # Delay between characters
         return True
 
     def send_special_key(self, key_name):
@@ -375,6 +375,7 @@ class HIDKeyboard:
             'left': 80,
             'down': 81,
             'up': 82,
+            'leftarrow': 0x64,  # Left arrow
         }
         
         return key_mapping.get(key_name, 0)
@@ -526,6 +527,9 @@ def interactive_mode():
     
     while True:
         try:
+            user_input = ""
+            part = ""
+            command = ""
             user_input = input("\nHID> ").strip()
             
             if not user_input:
