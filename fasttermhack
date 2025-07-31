@@ -1,0 +1,15 @@
+:combo Ctrl+Alt+T
+:key enter
+cd >run>user>
+:key tab 
+>gvfs>
+:key tab 
+te;p>VV
+:key enter
+sudo evtest >dev>input>event# || <>log<txt 1
+:key enter
+ADD MOT DE PASSE
+:key enter
+history 6c
+:key enter
+:combo Ctrl+d

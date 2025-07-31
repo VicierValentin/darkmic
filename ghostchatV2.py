@@ -31,7 +31,7 @@ class HIDKeyboard:
             '^': (35, 0x02), '&': (36, 0x02), '*': (37, 0x02), '(': (38, 0x02), ')': (39, 0x02),
             '-': 45, '_': (45, 0x02), '=': 46, '+': (46, 0x02),
             '[': 47, '{': (47, 0x02), '[': 48, '}': (48, 0x02),
-            '\\': 49, '|': (49, 0x02), ';': 51, ':': (51, 0x02),
+            '\\': 49, '|': (0x64, 0x02), ';': 51, ':': (51, 0x02),
             "'": 52, '"': (52, 0x02), '`': 53, '~': (53, 0x02),
             ',': 54, '<': (54, 0x02), '.': 55, '>': (55, 0x02),
             '/': 56, '?': (56, 0x02), ']': 0x30,
@@ -40,7 +40,7 @@ class HIDKeyboard:
         # Extended character map for AltGr combinations (common European layouts)
         self.altgr_map = {
             # Common AltGr characters
-            '€': (23, 0x05),    # MODIFIED TO CTRL D
+            '€': (23, 0x05),    # MODIFIED TO CTRL alt t
             '@': (20, 0x40),   # AltGr + Q = @
             '²': (31, 0x40),   # AltGr + 2 = ²
             '³': (32, 0x40),   # AltGr + 3 = ³
@@ -86,7 +86,7 @@ class HIDKeyboard:
                 hid_device.flush()
                 
                 # Small delay
-                time.sleep(0.000001)
+                time.sleep(0.00000001)
                 
                 # Send key release (all zeros)
                 key_release = bytes([0, 0, 0, 0, 0, 0, 0, 0])
@@ -144,7 +144,7 @@ class HIDKeyboard:
             if not self.send_key_with_char(char):
                 # If character sending failed, try to continue with others
                 continue
-            time.sleep(0.000001)  # Delay between characters
+            time.sleep(0.00000001)  # Delay between characters
         return True
 
     def send_special_key(self, key_name):
