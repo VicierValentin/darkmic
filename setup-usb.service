@@ -5,6 +5,7 @@ After=multi-user.target
 [Service]
 Type=oneshot
 
+ExecStartPre=/bin/sleep 60
 ExecStart=/home/debian/install.sh
 
 # needs root to write HID gadget

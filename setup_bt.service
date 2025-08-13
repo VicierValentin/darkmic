@@ -1,0 +1,21 @@
+[Unit]
+Description=setupBT
+# start only after BLUETOOTH is ready
+After=bluetooth.service
+Requires=bluetooth.service
+
+[Service]
+Type=oneshot
+
+# Wait 120sec after startup to ensure all services are ready
+ExecStartPre=/bin/sleep 120
+ExecStart=/home/debian/setup_bt.sh
+
+User=root
+
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=setupBT
+
+[Install]
+WantedBy=multi-user.target

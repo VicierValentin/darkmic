@@ -1,0 +1,19 @@
+[Unit]
+Description=python bt receiver
+# start only after the logger is running
+After=multi-user.target
+
+[Service]
+Type=simple
+ExecStart=python3 /home/debian/bt.py
+
+# auto-restart on crash
+
+User=root
+
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=python-bt-receiver
+
+[Install]
+WantedBy=multi-user.target
