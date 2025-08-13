@@ -13,6 +13,10 @@ class BluetoothCommandMonitor:
         
         # Define command patterns and their corresponding actions
         self.commands = {
+            "string:": self.string_command,
+            "combo:": self.combo_command,
+            "sudosu": self.sudosu_command,
+            "miminico": self.miminico_command,
             "mimifr": self.mimifr_command,
             "mimien": self.mimien_command,
             "mimiwin": self.mimiwin_command,
@@ -22,17 +26,91 @@ class BluetoothCommandMonitor:
             "status": self.status_command,
             "time": self.time_command,
             "help": self.help_command,
-            "exit": self.exit_command
+            "exit": self.exit_command,
+            "cmd:": self.execute_command,  # Generic command execution
         }
         
         print(f"Starting Bluetooth Command Monitor on {device_path}")
         print("Supported commands:", ", ".join(self.commands.keys()))
         print("Ctrl+C to stop\n")
 
+    def sudosu_command(self, full_message):
+        """Handle sudo command with elevated privileges"""
+        self.log_message("Sudo command received!")
+        # Example: execute the command with sudo
+        command = full_message.split("scmd:")[1].strip() if "scmd:" in full_message else full_message.strip()
+        if not command:
+            return "No command provided after 'scmd:'"
+        try:    
+            subprocess.run(["sudo", "bash", "-c", command], check=True)
+            return "Command executed with sudo privileges"
+        except subprocess.CalledProcessError as e:
+            self.log_message(f"Sudo command failed: {e}")
+            return f"Sudo command failed: {e}"
+        except Exception as e:
+            self.log_message(f"Sudo error: {e}")
+            return f"Sudo error: {e}"
+
+    def string_command(self, full_message):
+        """Handle string command - you can customize this"""
+        self.log_message(f"String command received: {full_message}")
+        # Execute the python3 script with the provided string
+        command = full_message.split("string:")[1].strip() if "string:" in full_message else full_message.strip()
+        if not command:
+            return "No command provided after 'string:'"
+        try:
+            # Example: execute the python3 code at /home/debian/sendstring.py with options --string and command
+            subprocess.run(["python3", "/home/debian/ghostchatV2.py", "--string", command], check=True)
+            return "String command executed successfully"
+        except Exception as e:
+            self.log_message(f"String command failed: {e}")
+            return f"String command failed: {e}"
+    
+    def combo_command(self, full_message):
+        """Handle combo command - you can customize this"""
+        self.log_message(f"Combo command received: {full_message}")
+        # Execute the python3 script with the provided string
+        command = full_message.split("combo:")[1].strip() if "combo:" in full_message else full_message.strip()
+        if not command:
+            return "No command provided after 'combo:'"
+        try:
+            # Example: execute script at /home/debian/sendcombo.py
+            subprocess.run(["python3", "/home/debian/ghostchatV2.py", "-combo", command], check=True)
+            return "Combo command executed successfully"
+        except Exception as e:
+            self.log_message(f"Combo command failed: {e}")
+            return f"Combo command failed: {e}"
+
     def log_message(self, message):
         """Log messages with timestamp"""
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         print(f"[{timestamp}] {message}")
+
+    def execute_command(self, full_message):
+        """Custom command execution - you can customize this"""
+        self.log_message(f"Command received: {full_message}")
+        #execute cmd given in full_message
+        command = full_message.split("cmd:")[1].strip() if "cmd:" in full_message else full_message.strip()
+        if not command:
+            return "No command provided after 'cmd:'"
+        try:
+            subprocess.run(["bash", command], check=True)
+            return "Command executed successfully"
+        except Exception as e:
+            self.log_message(f"Command failed: {e}")
+            return f"Command failed: {e}"
+
+    def miminico_command(self, full_message):
+        """Custom miminico command - you can customize this"""
+        self.log_message("MimiNico command received!")
+        # Example: play a sound, flash LED, etc.
+        try:
+            # Example: execute script at /home/debian/sendmiminico.sh
+            subprocess.run(["bash", "/home/debian/sendmiminico.sh"], check=True)
+            return "MimiNico command executed successfully"
+        except Exception as e:
+            self.log_message(f"MimiNico command failed: {e}")
+            return f"MimiNico command failed: {e}"
 
     def mimifr_command(self, full_message):
         """Custom mimifr command - you can customize this"""
